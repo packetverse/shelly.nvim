@@ -4,18 +4,24 @@ local state = require("shelly.state")
 local detection = require("shelly.detection")
 local settings = require("shelly.settings")
 local utils = require("shelly.utils")
+local config = require("shelly.config")
+
+local _setup_done = false
 
 function M.setup(opts)
-  opts = opts or {}
-
-  local config = require("shelly.config")
-
-  if opts.shells then
-    config.shell_configs = vim.tbl_deep_extend("force", config.shell_configs, opts.shells)
+  if _setup_done then
+    return
   end
 
-  if opts.preferred then
-    config.preferred_order = opts.preferred
+  _setup_done = true
+  opts = opts or {}
+
+  if opts.preferred and #opts.preferred > 0 then
+    config.preferred_order = vim.list_extend(vim.deepcopy(opts.preferred), config.preferred_order)
+  end
+
+  if opts.shells then
+    config.shell_configs = vim.tbl_deep_extend("force", vim.deepcopy(config.shell_configs), opts.shells or {})
   end
 
   if opts.auto_load ~= false then
