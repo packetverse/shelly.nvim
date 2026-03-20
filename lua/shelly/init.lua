@@ -90,9 +90,11 @@ function M.load_default()
 end
 
 function M.load()
-  local shell = M.load_default()
-  vim.opt.shell = shell
-  settings.apply(shell)
+  vim.schedule(function()
+    local shell = M.load_default()
+    vim.opt.shell = shell
+    settings.apply(shell)
+  end)
 end
 
 function M.select()
