@@ -3,8 +3,17 @@ local config = require("shelly.config")
 local M = {}
 
 function M.normalize_shell(name)
+  if not name or name == "" then
+    return ""
+  end
+
   local base = vim.fn.fnamemodify(name, ":t")
-  return config.shell_aliases[base] or base
+
+  if config.shell_aliases and config.shell_aliases[base] then
+    return config.shell_aliases[base]
+  end
+
+  return base
 end
 
 function M.is_executable(cmd)
