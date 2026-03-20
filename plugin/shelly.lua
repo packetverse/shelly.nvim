@@ -3,8 +3,6 @@ if not ok then
   return
 end
 
-shelly.load()
-
 vim.api.nvim_create_user_command("ShellySet", function(opts)
   shelly.set(opts.args)
 end, {
