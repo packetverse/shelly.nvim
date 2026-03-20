@@ -1,26 +1,54 @@
+local constants = require("shelly.constants")
+
 local M = {}
 
-local persist_file = vim.fn.stdpath("state") .. "/default_shell"
+local persist_file = constants.STATE_FILE
 
 function M.save(name)
-  vim.fn.mkdir(vim.fn.fnamemodify(persist_file, ":h"), "p")
+  if not name or name == "" then
+    vim.notify("Cannot save empty shell name", vim.log.levels.WARN)
+    return false
+  end
 
-  local f = io.open(persist_file, "w")
-  if f then
+  local ok, err = pcall(function()
+    local dir = vim.fn.fnamemodify(persist_file, ":h")
+    vim.fn.mkdir(dir, "p")
+
+    local f = io.open(persist_file, "w")
+    if not f then
+      error("Failed to open file for writing: " .. persist_file)
+    end
+
     f:write(name)
     f:close()
+  end)
+
+  if not ok then
+    vim.notify("Failed to save shell state: " .. tostring(err), vim.log.levels.ERROR)
+    return false
   end
+
+  return true
 end
 
 function M.load()
-  local f = io.open(persist_file, "r")
-  if not f then
+  local ok, result = pcall(function()
+    local f = io.open(persist_file, "r")
+    if not f then
+      return nil
+    end
+
+    local name = f:read("*l")
+    f:close()
+    return name
+  end)
+
+  if not ok then
+    vim.notify("Failed to load shell state", vim.log.levels.WARN)
     return nil
   end
 
-  local name = f:read("*l")
-  f:close()
-  return name
+  return result
 end
 
 return M
