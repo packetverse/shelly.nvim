@@ -20,15 +20,20 @@ M.preferred_order = {
   "cmd",
 }
 
-M.shell_aliases = {
-  powershell = "pwsh",
-}
+M.shell_aliases = {}
 
 M.shell_configs = {
   pwsh = {
     shellcmdflag = "-NoLogo -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new();$PSDefaultParameterValues['Out-File:Encoding']='utf8';",
     shellredir = '2>&1 | %{ "$_" } | Out-File %s; exit $LastExitCode',
     shellpipe = '2>&1 | %{ "$_" } | Tee-Object %s; exit $LastExitCode',
+    shellquote = "",
+    shellxquote = "",
+  },
+  powershell = {
+    shellcmdflag = "-NoLogo -Command", -- Simpler flags for legacy version
+    shellredir = "2>&1 | Out-File %s; exit $LastExitCode",
+    shellpipe = "2>&1 | Tee-Object %s; exit $LastExitCode",
     shellquote = "",
     shellxquote = "",
   },
