@@ -2,7 +2,6 @@ local M = {}
 
 -- Default config
 M.defaults = {
-  preferred = {},
   shells = {
     pwsh = {
       shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new();$PSDefaultParameterValues['Out-File:Encoding']='utf8';",
@@ -14,8 +13,7 @@ M.defaults = {
     powershell = {
       shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new();$PSDefaultParameterValues['Out-File:Encoding']='utf8';",
       shellredir = "2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode",
-      -- shellpipe = "2>&1 | Tee-Object -Encoding UTF8 %s; exit $LastExitCod",
-      shellpipe = "> %s 2>&1",
+      shellpipe = "2>&1 | Tee-Object -Encoding UTF8 %s; exit $LastExitCode",
       shellquote = "",
       shellxquote = "",
     },
@@ -48,13 +46,6 @@ local function get_shell()
   -- If no installed shells found return default
   if #Shelly.state.shells == 0 then
     return vim.opt.shell:get()
-  end
-
-  -- Check preferred order
-  for _, shell in ipairs(Shelly.opts.preferred) do
-    if Shelly.state.shells_set[shell] then
-      return shell
-    end
   end
 
   -- Get shell from ENV vars, on unix systems try $SHELL on windows try $ComSpec
